@@ -1,0 +1,82 @@
+from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+import os
+import PyPDF2
+from datetime import datetime
+
+app = Flask(__name__)
+
+# Configure SQLite DB
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///resumes.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Folder to store uploaded files
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Resume model (table)
+class Resume(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(150), nullable=False)
+    word_count = db.Column(db.Integer, nullable=False)
+    result = db.Column(db.String(200), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    if 'resume' not in request.files:
+        return render_template('index.html', result="❌ No file uploaded.")
+    
+    file = request.files['resume']
+    if file.filename == '':
+        return render_template('index.html', result="❌ No file selected.")
+    
+    if not file.filename.lower().endswith('.pdf'):
+        return render_template('index.html', result="❌ Please upload a PDF file.")
+    
+    try:
+        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(filepath)
+
+        text = extract_text_from_pdf(filepath)
+        result = detect_fake_resume(text)
+        
+        # Store in DB
+        new_resume = Resume(
+            filename=file.filename,
+            word_count=len(text.split()),
+            result=result
+        )
+        db.session.add(new_resume)
+        db.session.commit()
+
+        return render_template('index.html', result=result)
+    except Exception as e:
+        return render_template('index.html', result=f"❌ Error: {str(e)}")
+
+def extract_text_from_pdf(path):
+    with open(path, 'rb') as file:
+        reader = PyPDF2.PdfReader(file)
+        text = ''
+        for page in reader.pages:
+            text += page.extract_text() or ''
+    return text.strip()
+
+def detect_fake_resume(text):
+    if len(text.split()) < 100:
+        return "❌ Resume may be fake: too short."
+    if "lorem ipsum" in text.lower() or "1234" in text:
+        return "❌ Resume contains dummy data or placeholders."
+    if sum(word in text.lower() for word in ["expert", "guru", "10x", "ninja"]) > 5:
+        return "⚠️ Resume may be exaggerated with buzzwords."
+    return "✅ Resume looks genuine!"
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Create table if not exists
+    app.run(debug=True)

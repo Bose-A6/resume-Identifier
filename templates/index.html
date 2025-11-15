@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Analyzer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        width: 100%;
+        padding: 50px;
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .header p {
+        color: #666;
+        font-size: 14px;
+        font-weight: 300;
+      }
+
+      .upload-section {
+        margin-bottom: 30px;
+      }
+
+      .upload-label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
+
+      .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .file-input-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        border: 2px dashed #667eea;
+        border-radius: 12px;
+        background: #f8f9ff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        color: #667eea;
+      }
+
+      .file-input-label:hover {
+        background: #eef0ff;
+        border-color: #764ba2;
+        color: #764ba2;
+      }
+
+      .file-input-label.active {
+        background: #f0e6ff;
+        border-color: #764ba2;
+      }
+
+      .file-name {
+        display: none;
+        color: #666;
+        font-size: 13px;
+        margin-top: 10px;
+      }
+
+      .file-name.show {
+        display: block;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: "Poppins", sans-serif;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .result {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9ff;
+        border-radius: 12px;
+        border-left: 4px solid #667eea;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .result h2 {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 12px;
+        font-weight: 600;
+      }
+
+      .result p {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .result.success {
+        border-left-color: #10b981;
+        background: #f0fdf4;
+      }
+
+      .result.warning {
+        border-left-color: #f59e0b;
+        background: #fffbf0;
+      }
+
+      .result.error {
+        border-left-color: #ef4444;
+        background: #fef2f2;
+      }
+
+      .loader {
+        display: none;
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .loader.show {
+        display: block;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 30px 20px;
+        }
+
+        .header h1 {
+          font-size: 24px;
+        }
+
+        button {
+          padding: 12px;
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>📄 Resume Analyzer</h1>
+        <p>Detect fake resumes and validate authenticity</p>
+      </div>
+
+      <form
+        id="resumeForm"
+        method="POST"
+        action="/analyze"
+        enctype="multipart/form-data"
+      >
+        <div class="upload-section">
+          <label class="upload-label">Upload Resume (PDF)</label>
+          <div class="file-input-wrapper">
+            <input
+              type="file"
+              id="resume"
+              name="resume"
+              accept=".pdf"
+              required
+            />
+            <label for="resume" class="file-input-label">
+              <span>📁 Click to browse or drag & drop your PDF</span>
+            </label>
+          </div>
+          <div class="file-name" id="fileName"></div>
+        </div>
+
+        <button type="submit" id="submitBtn">Analyze Resume</button>
+      </form>
+
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p style="color: #667eea; margin-top: 10px; font-size: 14px">
+          Analyzing your resume...
+        </p>
+      </div>
+
+      {% if result %}
+      <div class="result" id="resultBox">
+        <h2>Analysis Result</h2>
+        <p>{{ result }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("resume");
+      const fileLabel = document.querySelector(".file-input-label");
+      const fileName = document.getElementById("fileName");
+      const form = document.getElementById("resumeForm");
+      const loader = document.getElementById("loader");
+      const submitBtn = document.getElementById("submitBtn");
+      const resultBox = document.getElementById("resultBox");
+
+      // Handle file input change
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          fileName.textContent = `✓ Selected: ${e.target.files[0].name}`;
+          fileName.classList.add("show");
+          fileLabel.classList.add("active");
+        }
+      });
+
+      // Drag and drop
+      fileLabel.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        fileLabel.classList.add("active");
+      });
+
+      fileLabel.addEventListener("dragleave", () => {
+        fileLabel.classList.remove("active");
+      });
+
+      fileLabel.addEventListener("drop", (e) => {
+        e.preventDefault();
+        fileLabel.classList.remove("active");
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type === "application/pdf") {
+          fileInput.files = files;
+          fileName.textContent = `✓ Selected: ${files[0].name}`;
+          fileName.classList.add("show");
+          fileLabel.classList.add("active");
+        }
+      });
+
+      // Form submission
+      form.addEventListener("submit", (e) => {
+        loader.classList.add("show");
+        submitBtn.disabled = true;
+      });
+
+      // Color code results
+      if (resultBox) {
+        const text = resultBox.innerText.toLowerCase();
+        if (text.includes("genuine")) {
+          resultBox.classList.add("success");
+        } else if (text.includes("exaggerated")) {
+          resultBox.classList.add("warning");
+        } else if (text.includes("fake") || text.includes("error")) {
+          resultBox.classList.add("error");
+        }
+      }
+    </script>
+  </body>
+</html>

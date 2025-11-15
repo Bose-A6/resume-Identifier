@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LieLens - Fake Resume Identifier</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      color: #d32f2f;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    form {
+      margin: 30px auto;
+      padding: 30px;
+      border: 2px solid #d32f2f;
+      border-radius: 15px;
+      max-width: 500px;
+      background-color: #fff5f5;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #d32f2f;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #d32f2f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #b71c1c;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <h1>LieLens 🔍</h1>
+  <h3>AI-Powered Resume Fraud Detection</h3>
+
+  <form method="POST" enctype="multipart/form-data" action="/analyze">
+    <input type="file" name="resume" required>
+    <br>
+    <button type="submit">Analyze Resume</button>
+  </form>
+
+  {% if result %}
+  <div class="result">{{ result }}</div>
+  {% endif %}
+
+  <div class="footer">© 2025 LieLens AI Tool</div>
+</body>
+</html>
